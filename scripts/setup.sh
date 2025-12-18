@@ -31,10 +31,10 @@ pip install --upgrade ".[prod]"
 #
 # Prepare the environment
 #
-if [[ ! -f .env ]]
+if [[ ! -f fastapi-frames-server/.env ]]
 then
-  cp .env.template .env
-  echo 'Mini App configuration file ready in `.env`. Please edit as needed'
+  cp fastapi-frames-server/.env.template fastapi-frames-server/.env
+  echo 'Mini App configuration file ready in `fastapi-frames-server/.env`. Please edit as needed'
 fi
 
 
