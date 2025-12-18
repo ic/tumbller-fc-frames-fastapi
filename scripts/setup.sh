@@ -25,6 +25,8 @@ then
   python3 -mvenv venv
 fi
 source venv/bin/activate
+# Check minimum Python requirement for 3.12
+python -c "import sys; '' if sys.version_info[0] == 3 and sys.version_info[1] >= 12 else sys.exit(1)"
 pip install --upgrade ".[prod]"
 
 
