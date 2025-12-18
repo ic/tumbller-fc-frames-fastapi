@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+root_dir=$(realpath $0 | rev | cut -d / -f 3- | rev)
+
+inshell=${1:-no}
+
+if [[ "$inshell" = "inshell" ]]
+then
+  bash ${root_dir}/scripts/run_dns_frontend.sh
+else
+  screen -S tumbller-dns-frontend -d -m bash ${root_dir}/scripts/run_dns_frontend.sh
+fi

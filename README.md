@@ -43,20 +43,44 @@ TUMBLLER_URL_A=http://ESP-CAM-IP
 TUMBLLER_URL_B=http://ESP-CAM-IP
 MNEMONIC_ENV_VAR=FARCASTER-KEY
 ```
-## Running the frame server 
+## Running the Mini App (aka frame server v2)
 
-* Replace each of the variable with the correct value.
-* ngrok  url is got after starting ngrok with 
-  * `ngrok http 8080`
-* Now setup the fastapi python virtual env with this command
+### Quickstart
+
+A standard setup script can be used on Debian-based machines to get started. Please refer to it for other systems at this point, or to the detail below.
+
+    bash scripts/setup.sh
+
+Under the standard setup:
+
+* `.env` needs to be edited to add DNS/FQDN name (e.g. tumbllers.yakrover.com) and options.
+* Need to get the [Farcaster association file](https://farcaster.xyz/~/developers/mini-apps/manifest) to authorise this instance.
+* `./bin/miniapp` starts the server to listen on all network interfaces. 
+* [Optional] `./bin/fakerover` to start a fake (software) rover for demo and testing.
+* [Optional] `./bin/dnsfrontend` to start the existing Ngrok DNS service to expose to the Internet.
+
+### Detail
+
+* Replace each of the variable with the correct value from `.env.template` and put them into a `.env` file.
+* Get the association file from the Manifest tool: https://farcaster.xyz/~/developers/mini-apps/manifest
+* Use Ngrok (or similar) to expose the server.
+  * `ngrok http --url=<FQDN domain name in .env> 8080`
+* Now setup the server code
   * `python -m venv venv`
-  * `pip install -r requirements.txt`
   * `source venv/bin/activate`
-* Now you should see a (venv) prefix in your command prompt
-* Start the frames server by going into farcaster-frames-server folder
+  * `pip install ".[prod]"
+* If you have no Tumbller around, you can use the fake rover
+  * From the root of this repository (in a different shell): `PYTHONPATH=. python dev/fake_rover.py`
+  * The fake rover by default listens on localhost at 5001, and can be modified in `.env`.
+* TLS configuration is now comulsory for MiniApp servers. Here example with [Let's Encrypt](https://certbot.eff.org/instructions?ws=other&os=snap) on Ubuntu:
+  * `sudo snap install --classic certbot`: Prepare for certificate confguration.
+  * `sudo ln -s /snap/bin/certbot /usr/bin/certbot`: End of preps.
+  * `sudo certbot certonly --standalone`: Configure certificate and renewal automation.
+  * `sudo certbot renew --dry-run`: Check renewal works fine.
+* Start the MiniApp server by going into the `farcaster-frames-server` folder
   * `cd farcaster-frames-server`
-* Start the frames server with command
-  * `uvicorn main:app --host 0.0.0.0 --port 8080 --reload`
+  * `sudo uvicorn main:app --host 0.0.0.0 --port 443 --reload --ssl-keyfile /etc/letsencrypt/live/yakrover.com/privkey.pem --ssl-certfile /etc/letsencrypt/live/yakrover.com/fullchain.pem`
+  * Note Farcaster expects the server to listen on 443, not customizable anymore.
 * Open a browser logged in with farcaster and then go to this url to test the frame
-  * `https://warpcast.com/~/developers/frames`
-  * Pase the ngrok url into it and play with the robot
+  * https://farcaster.xyz/~/developers/mini-apps/embed (you can also use the Manifest Tool; you can also try directly in a browser, but there will be no Farcaster integration there (e.g. payment will not work)).
+  * Paste the Ngrok URL into it and play with the robot

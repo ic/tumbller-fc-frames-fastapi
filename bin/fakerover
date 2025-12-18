@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+root_dir=$(realpath $0 | rev | cut -d / -f 3- | rev)
+
+if [[ ! -d "${root_dir}/venv" ]]
+then
+  >&2 echo "Setup requirements no found. Perhaps need to run scripts/setup.sh?"
+  exit 1
+fi
+
+inshell=${1:-no}
+
+if [[ "$inshell" = "inshell" ]]
+then
+  bash ${root_dir}/scripts/run_fake_rover.sh
+else
+  screen -S tumbller-fake-rover -d -m bash ${root_dir}/scripts/run_fake_rover.sh
+fi

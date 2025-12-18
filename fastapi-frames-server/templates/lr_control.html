@@ -2,25 +2,54 @@
 <html>
   <head>
     <title>Left/Right Control - Rover {{ rover_id }}</title>
-    <meta property="og:title" content="Left/Right Control" />
-    <meta property="og:image" content="{{ fc_frame_image }}" />
-    <meta name="fc:frame" content="vNext" />
-    <meta name="fc:frame:image" content="{{ fc_frame_image }}" />
-    <meta name="fc:frame:image:aspect_ratio" content="1.91:1" />
-    <meta name="fc:frame:button:1" content="Left" />
-    <meta name="fc:frame:button:1:action" content="post" />
-    <meta name="fc:frame:button:1:target" content="{{ base_url }}{{ rover_id }}/move/left" />
-    <meta name="fc:frame:button:2" content="Right" />
-    <meta name="fc:frame:button:2:action" content="post" />
-    <meta name="fc:frame:button:2:target" content="{{ base_url }}{{ rover_id }}/move/right" />
-    <meta name="fc:frame:button:3" content="Switch" />
-    <meta name="fc:frame:button:3:action" content="post" />
-    <meta name="fc:frame:button:3:target" content="{{ base_url }}{{ rover_id }}/move/stop" />
-    <meta name="fc:frame:button:4" content="Pic" />
-    <meta name="fc:frame:button:4:action" content="post" />
-    <meta name="fc:frame:button:4:target" content="{{ base_url }}{{ rover_id }}/pic" />
   </head>
   <body>
     <h1>Left/Right Control - Rover {{ rover_id }}</h1>
+    <div id="frame">
+      <img src="{{ fc_frame_image }}" id="frame-img" width="80%"/>
+    </div>
+    <p>Time left: <span id="timer">{{ time_left }}</span> seconds</p>
+    <div id="controls">
+      <form action="/v1/rover/{{ rover_id }}/move/left" method="POST">
+        <input type="submit" value="Left" />
+      </form>
+      <form action="/v1/rover/{{ rover_id }}/move/stop" method="POST">
+        <input type="submit" value="Stop" />
+      </form>
+      <form action="/v1/rover/{{ rover_id }}/move/right" method="POST">
+        <input type="submit" value="Right" />
+      </form>
+      <button id="pic">Pic</button>
+    </div>
+    <div>
+      <a href="{{ end_url }}">Exit</a>
+    </div>
+  </body>
+  <script type="module">
+    var pic = document.getElementById("frame-img");
+    document.getElementById("pic").onclick = function () {
+      window
+        .fetch("/v1/rover/{{ rover_id }}/pic", {method: "POST"})
+          .then((res) => res.json())
+          .then((body) => {
+              pic.src = body.fc_frame_image;
+          });
+    };
+    window.onload = function() {
+      var sec = {{ time_left }};
+
+      var _timer = setInterval(function() {
+          document.getElementById("timer").innerHTML = "" + sec;
+          sec--;
+      }, 1000);
+
+      setTimeout(function() {
+        clearInterval(_timer);
+        if (confirm("Your session is over. Go back to rover selection?")) {
+          window.location.href = "{{ end_url }}";
+        }
+      }, (sec + 2) * 1000);
+    };
+  </script>
   </body>
 </html>

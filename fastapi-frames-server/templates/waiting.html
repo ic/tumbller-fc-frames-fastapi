@@ -2,18 +2,26 @@
 <html>
   <head>
     <title>Rover Busy</title>
-    <meta property="og:title" content="Rover Busy" />
-    <meta property="og:image" content="{{ fc_frame_image }}" />
-    <meta name="fc:frame" content="vNext" />
-    <meta name="fc:frame:image" content="{{ fc_frame_image }}" />
-    <meta name="fc:frame:image:aspect_ratio" content="1.91:1" />
-    <meta name="fc:frame:button:1" content="Return to Selection" />
-    <meta name="fc:frame:button:1:action" content="post" />
-    <meta name="fc:frame:button:1:target" content="{{ base_url }}" />
     <meta name="fc:frame:button:2" content="⏱ {{ time_left }}s" />
   </head>
   <body>
     <h1>Rover {{ rover_id }} is currently busy</h1>
-    <p>Please try again in {{ time_left }} seconds</p>
+    <p>Please try again in <span id="timer">{{ time_left }}</span> seconds</p>
+    <a href="/v1">Return to Selection</a>
   </body>
+  <script>
+    window.onload = function() {
+      var sec = {{ time_left }};
+
+      var _timer = setInterval(function() {
+          document.getElementById("timer").innerHTML = "" + sec;
+          sec--;
+      }, 1000);
+
+      setTimeout(function() {
+        clearInterval(_timer);
+        window.location.href = "/v1";
+      }, (sec + 2) * 1000);
+    }
+  </script>
 </html>

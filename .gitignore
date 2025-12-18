@@ -95,8 +95,7 @@ ipython_config.py
 #Pipfile.lock
 
 # poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.  This is especially recommended for binary packages to ensure reproducibility, and is more
 #   commonly ignored for libraries.
 #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
 #poetry.lock
@@ -166,3 +165,7 @@ cython_debug/
 *.jpg
 *.png
 *.jpeg
+
+# Ignore from project
+*.db
+fastapi-frames-server/secrets/*

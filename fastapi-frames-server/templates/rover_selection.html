@@ -2,19 +2,42 @@
 <html>
   <head>
     <title>Select a Rover</title>
-    <meta property="og:title" content="Select a Rover" />
-    <meta property="og:image" content="{{ fc_frame_image }}" />
-    <meta name="fc:frame" content="vNext" />
-    <meta name="fc:frame:image" content="{{ fc_frame_image }}" />
-    <meta name="fc:frame:image:aspect_ratio" content="1.91:1" />
-    <meta name="fc:frame:button:1" content="Rover A {% if rover_a_available %}(Available){% else %}(Busy){% endif %}" />
-    <meta name="fc:frame:button:1:action" content="post" />
-    <meta name="fc:frame:button:1:target" content="{{ base_url }}select_rover/A" />
-    <meta name="fc:frame:button:2" content="Rover B {% if rover_b_available %}(Available){% else %}(Busy){% endif %}" />
-    <meta name="fc:frame:button:2:action" content="post" />
-    <meta name="fc:frame:button:2:target" content="{{ base_url }}select_rover/B" />
+    <style>
+      div#forms {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+      }
+      form {
+        margin: 23px;
+      }
+    </style>
   </head>
   <body>
-    <h1>Choose Your Rover</h1>
+    <h1>Select Your Rover</h1>
+    <div id="forms">
+      <form action="/v1/select_rover/A" method="POST">
+        <input type="submit" value="Rover A {% if rover_a_available %}(Available){% else %}(Busy){% endif %}" {% if not rover_a_available %}disabled{% endif %} />
+      </form>
+      <form action="/v1/select_rover/B" method="POST">
+        <input type="submit" value="Rover B {% if rover_b_available %}(Available){% else %}(Busy){% endif %}" {% if not rover_b_available %}disabled{% endif %} />
+      </form>
+    </div>
+    <img src="/static/tumbllerImage.jpg" width="100%"/>
   </body>
+  <script type="module">
+    import { sdk } from 'https://esm.sh/@farcaster/frame-sdk'
+    await sdk.actions.ready();
+    if (typeof sdk.context == "CastEmbedLocationContext" && sdk.context.type == "cast_embed") {
+      Array.from(document.getElementsByTagName("form")).forEach((form) => {
+        form.onsubmit = function() {
+          var input = document.createElement("input");
+          input.type = "hidden";
+          input.name = "fid";
+          input.value = sdk.context.cast.fid;
+          form.appendChild(input);
+        };
+      });
+    }
+  </script>
 </html>
